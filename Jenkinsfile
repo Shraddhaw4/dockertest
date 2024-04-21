@@ -32,7 +32,7 @@ pipeline {
     }
     stage('Test') {
       steps {
-        sh 'docker run my-flask-app python -m pytest test.py'
+        sh 'docker run my-flask-app python -m pytest'
       }
     }
     stage('Deploy') {
