@@ -12,6 +12,7 @@ pipeline {
         stage('Build') {
             steps {
                 // Activate a virtual environment (if needed)
+                sh 'sudo yum install python3-pip'
                 sh 'python -m venv venv'
                 sh 'source venv/bin/activate'
                 sh 'pip install flask'
