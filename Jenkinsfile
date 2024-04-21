@@ -18,7 +18,7 @@ pipeline {
                 sh 'pip install flask'
               
                 // Build the Python script
-                sh 'python app.py'
+                sh 'nohup python app.py'
                 sh 'echo curl localhost:3000'
             }
         }
