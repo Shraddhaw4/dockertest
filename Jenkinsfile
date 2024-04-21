@@ -14,6 +14,7 @@ pipeline {
                 // Activate a virtual environment (if needed)
                 sh 'python -m venv venv'
                 sh 'source venv/bin/activate'
+                sh 'pip install flask'
               
                 // Build the Python script
                 sh 'python app.py'
