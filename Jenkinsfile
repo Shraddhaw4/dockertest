@@ -9,29 +9,44 @@ pipeline {
             }
         }
       
-        stage('Build') {
-            steps {
+        //stage('Build') {
+          //  steps {
                 // Activate a virtual environment (if needed)
-                sh 'sudo yum -y install python3-pip'
-                sh 'python -m venv venv'
-                sh 'source venv/bin/activate'
-                sh 'pip install flask'
+            //    sh 'sudo yum -y install python3-pip'
+              //  sh 'python -m venv venv'
+                //sh 'source venv/bin/activate'
+               // sh 'pip install flask'
               
                 // Build the Python script
-                sh 'nohup python app.py'
-                sh 'echo curl localhost:3000'
-            }
-        }
+               // sh 'nohup python app.py'
+               // sh 'echo curl localhost:3000'
+           // }
+       // }
+    //}
+        
+    stage('Build') {
+      steps {
+        sh 'docker build -t my-flask-app .'
+        sh 'docker tag my-flask-app $DOCKER_BFLASK_IMAGE'
+      }
     }
-
-    post {
-        success {
-            // This block is executed when the build is successful
-            echo 'Build successful!'
-        }
-        failure {
-            // This block is executed when the build fails
-            echo 'Build failed!'
-        }
+    stage('Test') {
+      steps {
+        sh 'docker run my-flask-app python -m pytest app/test.py'
+      }
     }
+    stage('Deploy') {
+      steps {
+        withCredentials([usernamePassword(credentialsId: "${DOCKER_REGISTRY_CREDS}", passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USERNAME')]) {
+          sh "echo \$DOCKER_PASSWORD | docker login -u \$DOCKER_USERNAME --password-stdin docker.io"
+          sh 'docker push $DOCKER_BFLASK_IMAGE'
+        }
+      }
+    }
+  }
+  post {
+    always {
+      sh 'docker logout'
+    }
+  }
 }
